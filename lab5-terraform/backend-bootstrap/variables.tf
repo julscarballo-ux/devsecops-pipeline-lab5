@@ -6,5 +6,5 @@ variable "state_bucket_name" {
 variable "iam_user_name" {
   description = "Nombre del usuario IAM creado en el Laboratorio 3, al que se le agrega permiso de DynamoDB"
   type        = string
-  default     = "devsecops-lab-user"
+  default     = "terraform-user"
 }
