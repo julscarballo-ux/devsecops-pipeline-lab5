@@ -6,7 +6,7 @@ terraform {
       version = "~> 5.0"
     }
   }
- 
+
   backend "s3" {
     bucket         = "devsecops-lab-tfstate-2026"
     key            = "static-site/terraform.tfstate"
@@ -16,14 +16,30 @@ terraform {
   }
 }
 
-module "site" {
-  source = "../../modules/static-site"
+provider "aws" {
+  region = "us-east-1"
+}
 
-  bucket_name     = var.bucket_name
-  index_file_path = "${path.module}/../../website/index.html"
-  environment     = "dev"
-
-  tags = {
-    Equipo = "DevSecOps"
+locals {
+  # Traduce el nombre real del workspace a un "alias" para nombrar recursos.
+  # El workspace "default" (el que ya tiene el bucket de dev del Lab 5)
+  # se sigue llamando "dev" a efectos de nomenclatura.
+  workspace_aliases = {
+    default = "dev"
   }
+  environment_name = lookup(local.workspace_aliases, terraform.workspace, terraform.workspace)
+
+  environment_settings = {
+    dev     = { tags = { Criticidad = "baja" } }
+    staging = { tags = { Criticidad = "media" } }
+    prod    = { tags = { Criticidad = "alta" } }
+  }
+}
+
+module "site" {
+  source          = "../../modules/static-site"
+  bucket_name     = "devsecops-lab-${local.environment_name}-chupisquad-2026"
+  index_file_path = "${path.module}/../../website/index.html"
+  environment     = local.environment_name
+  tags            = local.environment_settings[local.environment_name].tags
 }
