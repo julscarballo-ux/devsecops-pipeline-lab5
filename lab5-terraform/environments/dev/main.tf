@@ -8,7 +8,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "devsecops-lab-tfstate-2026"
+    bucket         = "devsecops-lab-tfstate-2026-dev"
     key            = "static-site/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-locks"
@@ -38,7 +38,7 @@ locals {
 
 module "site" {
   source          = "../../modules/static-site"
-  bucket_name     = "devsecops-lab-${local.environment_name}-chupisquad-2026"
+  bucket_name     = "devsecops-lab-${local.environment_name}-alecruz-2026"
   index_file_path = "${path.module}/../../website/index.html"
   environment     = local.environment_name
   tags            = local.environment_settings[local.environment_name].tags
